@@ -2,13 +2,13 @@
 
 namespace Nauticsoft\NovaView;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Nauticsoft\NovaView\Http\Middleware\Authorize;
-use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Nova;
-use Illuminate\Support\Facades\Blade;
+use Nauticsoft\NovaView\Http\Middleware\Authorize;
+use UnexpectedValueException;
 
 class NovaViewServiceProvider extends ServiceProvider
 {
@@ -21,10 +21,6 @@ class NovaViewServiceProvider extends ServiceProvider
     {
         $this->app->booted(function () {
             $this->routes();
-        });
-
-        Nova::serving(function (ServingNova $event) {
-            //
         });
     }
 
@@ -39,32 +35,28 @@ class NovaViewServiceProvider extends ServiceProvider
             return;
         }
 
-        $tools = NovaView::getTools();
+        $registeredSlugs = [];
 
-        foreach ($tools as $tool => $config) {
-            $route = 'nova-vendor/nova-view/'.$tool.'/';
+        foreach (NovaView::getViews() as $view) {
+            $slug = $view->getSlug();
 
-            Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-view/'.$tool)
+            if (in_array($slug, $registeredSlugs)) {
+                throw new UnexpectedValueException("There is already a Nova View registered with the slug [{$slug}]. Duplicate found in [".get_class($view).']');
+            }
+
+            $registeredSlugs[] = $slug;
+
+            $route = 'nova-vendor/nova-view/'.$slug.'/';
+
+            Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-view/'.$slug)
                 ->get('/', fn () => inertia('NovaView', [
-                    'title' => $config['name'] ?? $tool,
+                    'title' => $view->getTitle(),
                     'route' => $route,
                 ]));
 
             Route::middleware(['nova', Authorize::class])
                 ->prefix($route)
-                ->get('/', function() use ($tool) {
-                    return Blade::render("@include('".NovaView::getView($tool)."')");
-                });
+                ->get('/', fn () => Blade::render("@include('".$view->getView()."')"));
         }
-    }
-
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
     }
 }

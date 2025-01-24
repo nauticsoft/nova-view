@@ -91,8 +91,6 @@ class NovaView extends Tool
             throw new UnexpectedValueException("Nova view [{$viewClass}] not defined.");
         }
 
-        $icon = method_exists($view, 'getIcon') ? $view->getIcon() : null;
-
         return MenuItem::make($view->getTitle())
             ->path('/nova-view/'.$view->getSlug());
     }

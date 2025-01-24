@@ -4,6 +4,7 @@ namespace Nauticsoft\NovaView;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Laravel\Nova\Menu\MenuItem;
 use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
@@ -44,7 +45,7 @@ class NovaView extends Tool
         }
 
         return $this->getViews()
-            ->map(fn ($view) => self::menuFor(get_class($view)));
+            ->map(fn ($view) => self::menuSection(get_class($view)));
     }
 
     /**
@@ -60,9 +61,9 @@ class NovaView extends Tool
     }
 
     /**
-     * Build a main menu for a specific view.
+     * Build a menu section for a specific view.
      */
-    public static function menuFor(string $viewClass): MenuSection
+    public static function menuSection(string $viewClass): MenuSection
     {
         $view = self::getViews()->filter(fn ($object) => $viewClass === get_class($object))
             ->first();
@@ -76,5 +77,23 @@ class NovaView extends Tool
         return MenuSection::make($view->getTitle())
             ->path('/nova-view/'.$view->getSlug())
             ->icon($icon ?: 'server');
+    }
+
+    /**
+     * Build a menu item for a specific view.
+     */
+    public static function menuItem(string $viewClass): MenuItem
+    {
+        $view = self::getViews()->filter(fn ($object) => $viewClass === get_class($object))
+            ->first();
+
+        if ($view === null) {
+            throw new UnexpectedValueException("Nova view [{$viewClass}] not defined.");
+        }
+
+        $icon = method_exists($view, 'getIcon') ? $view->getIcon() : null;
+
+        return MenuItem::make($view->getTitle())
+            ->path('/nova-view/'.$view->getSlug());
     }
 }

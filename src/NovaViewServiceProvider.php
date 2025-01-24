@@ -54,7 +54,7 @@ class NovaViewServiceProvider extends ServiceProvider
                     'route' => $route,
                 ]));
 
-            Route::middleware(['nova', Authorize::class])
+            Route::middleware(['nova', Authenticate::class, Authorize::class])
                 ->prefix($route)
                 ->get('/', fn () => Blade::render("@include('".$view->getView()."')"));
         }

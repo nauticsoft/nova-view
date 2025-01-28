@@ -22,6 +22,8 @@ class NovaViewServiceProvider extends ServiceProvider
         $this->app->booted(function () {
             $this->routes();
         });
+
+        Blade::anonymousComponentPath(__DIR__.'/../resources/views/components', 'nova-view');
     }
 
     /**

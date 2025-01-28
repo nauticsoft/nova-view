@@ -114,6 +114,37 @@ To make Nova View know that you have a view to display, you need to register it 
 ],
 ```
 
+## View components
+
+The package comes with a set of components that you can use in your blade views.
+
+```blade
+<div class="w-full flex flex-col gap-6">
+    <div class="w-full">
+        <x-nova-view::heading>This is a custom page</x-nova-view:heading>
+        <p class="leading-tight mt-3">Welcome to a custome page made using Nova View components.</p>
+    </div>
+
+    <x-nova-view::cards>
+        <x-nova-view::card class="p-6" width="1/4">
+            <x-nova-view::heading>Some useful information</x-nova-view:heading>
+        </x-nova-view::card>
+        <x-nova-view::card class="p-6" width="1/4">
+            <x-nova-view::heading>Some useful information</x-nova-view:heading>
+        </x-nova-view::card>
+        <x-nova-view::card class="p-6" width="1/4">
+            <x-nova-view::heading>Some useful information</x-nova-view:heading>
+        </x-nova-view::card>
+        <x-nova-view::card class="p-6" width="1/4">
+            <x-nova-view::heading>Some useful information</x-nova-view:heading>
+        </x-nova-view::card>
+    </x-nova-view::cards>
+
+    <x-nova-view::heading :level="2">List of users</x-nova-view:heading>
+    <x-nova-view::table :fields="['ID', 'Name', 'Last Name']" :rows="[[1, 'John', 'Doe'], [2, 'Jane', 'Doe']]" />
+</div>
+``````
+
 ---
 
 Nova View is an open-sourced software licensed under the **[MIT license](https://opensource.org/licenses/MIT)**.

@@ -9,7 +9,7 @@ The new section will display a custom defined Blade view, meaning that you can p
 
 ## Installation
 
-> **Requires [PHP 8.3+](https://php.net/releases/) and [Laravel Nova 4](https://nova.laravel.com/)**
+> **Requires [PHP 8.3+](https://php.net/releases/) and [Laravel Nova 4 or 5](https://nova.laravel.com/)**
 
 You can require Nova View using [Composer](https://getcomposer.org) with the following command:
 

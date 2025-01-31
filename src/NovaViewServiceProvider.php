@@ -2,6 +2,7 @@
 
 namespace Nauticsoft\NovaView;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -51,10 +52,16 @@ class NovaViewServiceProvider extends ServiceProvider
             $route = 'nova-vendor/nova-view/'.$slug.'/';
 
             Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-view/'.$slug)
-                ->get('/', fn () => inertia('NovaView', [
-                    'title' => $view->getTitle(),
-                    'route' => $route,
-                ]));
+                ->get('/', function (Request $request) use ($view, $route) {
+                    if ($request->query() !== []) {
+                        $route .= '?'.http_build_query($request->query());
+                    }
+
+                    return inertia('NovaView', [
+                        'title' => $view->getTitle(),
+                        'route' => $route,
+                    ]);
+                });
 
             Route::middleware(['nova', Authenticate::class, Authorize::class])
                 ->prefix($route)
